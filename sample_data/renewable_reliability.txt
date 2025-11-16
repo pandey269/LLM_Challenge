@@ -1,0 +1,4 @@
+Renewable Reliability Notes
+---------------------------
+Solar panels produce less power when wildfire smoke or persistent haze blocks sunlight.
+Wind farms require stable wind speeds; climate-driven extremes can force turbines offline or leave them becalmed, reducing grid reliability.

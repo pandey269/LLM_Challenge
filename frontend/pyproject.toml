@@ -1,0 +1,15 @@
+[project]
+name = "frontend"
+version = "0.1.0"
+description = "Streamlit UI for Intelligent Document QA"
+requires-python = ">=3.10"
+authors = [{name = "Vivek Pandey"}]
+dependencies = [
+    "streamlit>=1.36.0",
+    "requests>=2.32.0",
+    "python-dotenv>=1.0.1"
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"

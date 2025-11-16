@@ -1,0 +1,21 @@
+RAG Overview
+------------
+Retrieval-Augmented Generation (RAG) combines a retriever and a generator so large language models can answer questions using private or up-to-date context. A dense vector store such as Chroma or FAISS stores document chunks, and a retriever selects the top-k chunks to ground the LLM response. This pattern improves factual accuracy and allows auditors to trace each statement back to its source document ID and page number.
+
+Key Benefits
+------------
+1. Fresh Knowledge: By indexing PDFs, DOCX, and TXT files, teams can update the vector store whenever new policies or specs arrive without retraining an LLM.
+2. Compliance: RAG prompts can require the model to cite chunk IDs, helping reviewers verify claims against the originating document.
+3. Cost Control: Hybrid retrieval (dense + sparse/BM25) narrows the context passed to the LLM, reducing token usage while keeping recall high.
+
+Implementation Notes
+--------------------
+- Chunking: Use a RecursiveCharacterTextSplitter with ~600 token chunks and 120 token overlap to keep passages coherent.
+- Embeddings: Open-source models like `nomic-ai/nomic-embed-text-v1.5` work well for general knowledge bases and can run locally.
+- Observability: Log each query, retrieved chunk IDs, latency (p50/p95), and token counts to detect regressions.
+
+Evaluation Checklist
+--------------------
+- Functional tests should include questions that require synthesizing two documents and ones that should return "I don't know" when evidence is missing.
+- Performance tests should target p95 end-to-end latency below 2.5 seconds with at least 20 concurrent queries.
+

@@ -1,0 +1,84 @@
+Project Brief: Intelligent Document Q&A System (LLM Recruitment Challenge)
+=====================================================================
+
+Overview
+--------
+This challenge assesses senior-level skills across data engineering, retrieval-augmented generation (RAG), prompt engineering, evaluation, and scalable deployment. The system must answer questions grounded in uploaded documents while emphasizing correctness, robustness, and clarity of design.
+
+Objective
+---------
+Design and implement a production-ready prototype that uses a Large Language Model (LLM) to answer questions from the contents of uploaded documents (PDF, DOCX, TXT). The solution must support:
+- Multi-document ingestion and processing
+- Semantic search over chunked content (RAG)
+- Context-aware question answering with grounded citations
+- Operational concerns: observability, performance, and cost-awareness
+
+Project Requirements
+--------------------
+1. Document Ingestion & Preprocessing
+   - Accept multiple formats: PDF, DOCX, TXT.
+   - Extract and normalize text; remove boilerplate.
+   - Chunk documents by semantic boundaries or token limits with overlap.
+   - Persist document and chunk metadata (document id, section headers, page numbers).
+
+2. Embedding & Indexing
+   - Generate embeddings using modern sentence models (OpenAI, HuggingFace, or local).
+   - Store vectors in a vector index (FAISS, Pinecone, Weaviate, Chroma) with metadata.
+   - Support re-indexing on document updates.
+
+3. Retrieval (Semantic Search)
+   - Top-k retrieval with relevance scoring and metadata filtering.
+   - Optional: hybrid retrieval (sparse + dense) and reranking.
+   - Guard against near-duplicate chunks and noisy context.
+
+4. LLM Question Answering
+   - Construct prompts grounded strictly in retrieved context.
+   - Return citations (doc name + page/section) for each factual claim.
+   - Include an “I don’t know / Not in corpus” policy for missing evidence.
+   - Optional: multi-step reasoning or tool-use to improve fidelity.
+
+5. Evaluation & Observability
+   - Quality: exact-match / semantic similarity against gold answers.
+   - Performance: p50/p95 latency; throughput under concurrent queries.
+   - Cost: token usage and caching strategy (if API-based).
+   - Logging: capture prompts, retrieved chunks, model responses, feedback.
+
+6. Bonus Scope (Optional)
+   - Multilingual documents and queries.
+   - Relevance feedback loop (implicit/explicit ratings).
+   - Lightweight UI (e.g., Streamlit) with document upload, search, answer view.
+
+Deliverables
+------------
+- Source code with clear module boundaries.
+- Architecture diagram (components and data flow).
+- README with setup, environment, and run instructions.
+- Evaluation report (methods, metrics, results, trade-offs).
+- Sample queries with answers and citations (≥10).
+- Optional: short video walkthrough (≤5 minutes).
+
+Evaluation Criteria (Weights)
+----------------------------
+- Technical Depth (RAG design, model choices, citations) – 30%
+- Code Quality & Modularity (tests, structure, typing) – 20%
+- LLM Integration & Prompt Design (grounding, safety) – 20%
+- Scalability & Performance (latency, indexing, caching) – 15%
+- Documentation & Presentation (clarity, diagrams) – 15%
+
+Test Cases
+----------
+A) Functional Correctness
+1. Single-Document Fact Retrieval – Upload ML basics doc; ask “What are two benefits of supervised learning?” Expect grounded answer + citations.
+2. Multi-Document Synthesis – Upload climate + renewable docs; ask “How does climate change influence renewable energy reliability?” Expect citations from ≥2 docs.
+3. Out-of-Corpus Handling – With biology docs, ask “What is dark matter?” Expect “Not found”.
+4. Conflicting Evidence – Provide conflicting stats; system should cite both and note discrepancy.
+5. Long-Context Robustness – Upload ≥80-page PDF; ask for specific section details; citations include page/section.
+
+B) Multilingual (Optional)
+6. Spanish Query on Spanish Doc – Ask “¿Cuáles son los beneficios del aprendizaje automático?” Expect Spanish answer + citations.
+7. Cross-Lingual Query – English doc, Hindi query; answer in Hindi referencing English sources.
+
+C) Performance & Reliability
+8. Index Scale Test – Ingest ≥5,000 chunks (or ≥500 docs); measure p50/p95 latency (target p95 < 2.5s).
+9. Concurrency Test – Run 20 concurrent queries for 2 minutes; expect no errors, stable latency.
+10. Cold vs Warm Cache – Compare latency/token usage before and after enabling caching/embedding reuse.

@@ -1,0 +1,70 @@
+digraph RAGArch {
+  graph [fontname="Inter", fontsize=12, labelloc="t", label="Intelligent Document Q&A Architecture"];
+  node [shape=box, style=filled, fillcolor="#f8f9fb", color="#4f6cf7", fontname="Inter", fontsize=11];
+  edge [color="#42526e", penwidth=1.2];
+
+  subgraph cluster_client {
+    label="Client";
+    style="rounded,dashed";
+    color="#9ba7c6";
+    user [label="End User\nBrowser", shape=oval, fillcolor="#fff2cc", color="#d4aa00"];
+  }
+
+  subgraph cluster_frontend {
+    label="Frontend (Streamlit)";
+    style="rounded";
+    color="#7f8ac1";
+    fe [label="Streamlit App\nUpload + Q&A"];
+  }
+
+  subgraph cluster_backend {
+    label="Backend (FastAPI + LangGraph)";
+    style="rounded";
+    color="#5e6ba1";
+    api [label="FastAPI Router\n/ingest & /query"];
+    ingest [label="Ingestion Pipeline\nLoaders + Splitter"];
+    embed [label="Embedding Service\nnomic-embed-text-v1.5"];
+    retr [label="Hybrid Retriever\nChroma + BM25"];
+    graphnode [label="LangGraph Self-RAG\nRetrieve → Draft → Reflect"];
+    llm [label="LLM Service\nOpenAI / Ollama"];
+    obs [label="Observability\nOTel / logs"];
+  }
+
+  subgraph cluster_storage {
+    label="Storage";
+    style="rounded";
+    color="#6ea58b";
+    raw [label="data/uploads\n(raw docs)", shape=folder, fillcolor="#e3fcef", color="#4dbd77"];
+    meta [label="data/metadata\n(chunk JSONL)", shape=folder, fillcolor="#e3fcef", color="#4dbd77"];
+    vec [label="Chroma Vector DB\ndata/vectorstore", shape=folder, fillcolor="#e3fcef", color="#4dbd77"];
+  }
+
+  subgraph cluster_tooling {
+    label="Tooling & Evaluation";
+    style="rounded,dashed";
+    color="#c08497";
+    cli [label="CLI / Make Targets\ningest | eval | tests"];
+    eval [label="Evaluation Harness\nRAGAS / Load Tests"];
+  }
+
+  user -> fe [label="HTTPS" color="#4f6cf7"];
+  fe -> api;
+  api -> raw [label="store uploads"];
+  api -> ingest;
+  ingest -> meta [label="chunks"];
+  ingest -> embed [label="chunk batch"];
+  embed -> vec [label="persist embeddings"];
+  api -> graphnode [label="questions"];
+  graphnode -> retr [label="retrieve"];
+  retr -> vec;
+  retr -> meta;
+  graphnode -> llm [label="grounded prompt"];
+  llm -> graphnode [label="draft+reflect"];
+  graphnode -> fe [label="answer+citation", color="#4dbd77"];
+  api -> obs;
+  graphnode -> obs;
+  cli -> ingest;
+  cli -> embed;
+  cli -> eval;
+  eval -> obs;
+}
